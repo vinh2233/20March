@@ -32,8 +32,11 @@ let userSchema = new mongoose.Schema({
         type:Number,
         min:0,
         default:0
-    }
+    },
+    tokenResetPassword:String,
+    tokenResetPasswordExp:Date
 },{
+    
     timestamps:true
 })
 userSchema.pre('save',function(next){

@@ -1,5 +1,5 @@
 var userSchema = require('../schemas/user')
-var roleController = require('./roles')
+var roleController = require('../controllers/roles')
 let bcrypt = require('bcrypt')
 
 module.exports = {
@@ -7,7 +7,16 @@ module.exports = {
         return await userSchema.find({}).populate('role');
     },
     GetUserById: async (id) => {
-        return await userSchema.findById(req.params.id);
+        return await userSchema.findById(id).populate('role');
+    },
+    GetUserByEmail: async (email) => {
+        return await userSchema.findOne({
+            email: email
+        }).populate('role');
+    },GetUserByToken: async (token) => {
+        return await userSchema.findOne({
+            tokenResetPassword: token
+        }).populate('role');
     },
     CreateAnUser: async (username, password, email, role) => {
         let GetRole = await roleController.GetRoleByName(role);
@@ -42,17 +51,17 @@ module.exports = {
             return await user.save();
         }
     },
-    Login: async function (username,password){
+    Login: async function (username, password) {
         let user = await userSchema.findOne({
-            username:username
+            username: username
         })
-        if(!user){
+        if (!user) {
             throw new Error("username hoac mat khau khong dung")
-        }else{
-            console.log(bcrypt.compareSync(password,user.password));
-            if(bcrypt.compareSync(password,user.password)){
+        } else {
+            console.log(bcrypt.compareSync(password, user.password));
+            if (bcrypt.compareSync(password, user.password)) {
                 return user;
-            }else{
+            } else {
                 throw new Error("username hoac mat khau khong dung")
             }
         }
